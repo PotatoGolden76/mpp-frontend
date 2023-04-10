@@ -39,7 +39,7 @@ export default function Directors() {
 
     const updateDirector = (e: any) => {
         e.preventDefault()
-        if(selection == undefined)
+        if (selection == undefined)
             return
         console.log(selection)
         fetch(process.env.REACT_APP_API_URL + "/directors/" + (selection!.id ? selection!.id : ""), {
@@ -65,6 +65,17 @@ export default function Directors() {
         setSelection(undefined)
     }
 
+    let [direction, setDir] = useState(true)
+    const handleSort = () => {
+        let temp = [...data]
+
+        console.log(temp)
+        temp.sort((a: Director, b: Director) => { return a.name.localeCompare(b.name) })
+        setData(direction ? temp : temp.reverse())
+        setDir(!direction)
+    }
+
+
     return (
         <>
             <CustomNavbar />
@@ -78,7 +89,7 @@ export default function Directors() {
                                     <Form.Control value={selection ? selection!.id : ""} type="text" placeholder="" disabled readOnly />
                                 </Form.Group>
                             </Col>
-                            <Col>
+                            <Col >
                                 <Form.Group className="mb-1" controlId="formName">
                                     <Form.Label>Name:</Form.Label>
                                     <Form.Control value={selection ? selection!.name : ""} onChange={e => setSelection({ ...selection!, name: e.target.value })} type="text" placeholder="" />
@@ -132,7 +143,7 @@ export default function Directors() {
                 <Table hover>
                     <thead>
                         <tr>
-                            <th>Name</th>
+                            <th onClick={handleSort}>Name</th>
                             <th>Age</th>
                             <th>Birth Date</th>
                             <th>Death Date</th>
