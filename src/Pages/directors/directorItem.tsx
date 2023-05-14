@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button } from 'react-bootstrap';
 
 
-export default function TableItem(props: any) {
+export default function DirectorItem(props: any) {
     let { id, name, age, birthDate, deathDate, nationality } = props.object
 
     const handleClick = (e: any) => {

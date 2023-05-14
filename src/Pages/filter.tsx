@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import CustomNavbar from "../Components/Navbar";
 import { Container, Form, Table } from 'react-bootstrap';
-import TableItem from '../Components/TableItem';
-import { Director } from './directors';
+import TableItem from './directors/directorItem';
+import { Director } from './directors/directors';
 
 export default function Filter() {
     const [data, setData] = useState([])

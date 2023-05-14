@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
-import CustomNavbar from "../Components/Navbar";
+import CustomNavbar from "../../Components/Navbar";
 import Container from 'react-bootstrap/Container';
-import { Button, Col, Form, Row, Table } from 'react-bootstrap';
-import TableItem from '../Components/TableItem';
+import { Button, Col, Form, Pagination, Row, Table } from 'react-bootstrap';
+import TableItem from './directorItem';
 
 export interface Director {
     id: string,
@@ -18,14 +18,19 @@ export default function Directors() {
     const [selection, setSelection] = useState<Director | undefined>({} as Director)
     const form = useRef(null)
 
-    const fetchData = () => {
-        fetch(process.env.REACT_APP_API_URL + "/directors/")
-            .then(response => response.json())
-            .then(json => { setData(json.directors) })
-    }
+    const endpoint = "/directors/"
 
+    // fetch directors
+    const fetchData = (page:  number) => {
+        fetch(process.env.REACT_APP_API_URL + endpoint + "?page=" + page, {
+
+        })
+            .then(response => response.json())
+            .then(json => { setData(json.directors)
+            setLast(json["last_page"]) })
+    }
     useEffect(() => {
-        fetchData()
+        fetchData(1)
     }, [])
 
     useEffect(() => {
@@ -42,22 +47,22 @@ export default function Directors() {
         if (selection == undefined)
             return
         console.log(selection)
-        fetch(process.env.REACT_APP_API_URL + "/directors/" + (selection!.id ? selection!.id : ""), {
+        fetch(process.env.REACT_APP_API_URL + endpoint + (selection!.id ? selection!.id : ""), {
             method: selection!.id ? "PATCH" : "POST",
             headers: {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(selection),
         }).then(response => console.log(response))
-            .then(() => { fetchData() })
+            .then(() => { fetchData(page) })
     }
 
     const deleteDirector = (id: any) => {
         if (id) {
-            fetch(process.env.REACT_APP_API_URL + "/directors/" + id, {
+            fetch(process.env.REACT_APP_API_URL + endpoint + id, {
                 method: "DELETE"
             }).then(response => console.log(response))
-                .then(() => { fetchData() })
+                .then(() => { fetchData(page) })
         }
     }
 
@@ -75,6 +80,15 @@ export default function Directors() {
         setDir(!direction)
     }
 
+
+    const [page, setPage] = useState(1)
+    const [lastPage, setLast] = useState(10)
+
+    const changePage = (nr: number) => {
+        nr = Math.min(Math.max(nr, 1), lastPage);
+        setPage(nr)
+        fetchData(nr)
+    }
 
     return (
         <>
@@ -139,12 +153,39 @@ export default function Directors() {
                 </Form>
 
 
+                <Pagination>
+                    <Pagination.Prev onClick={() => {
+                        changePage(page - 1)
+                    }} />
+                    <Pagination.Item active={page == 1} onClick={() => {
+                        changePage(1)
+                    }}>{1}</Pagination.Item>
+                    {page > 3 ? <Pagination.Ellipsis /> : null}
+                    {page > 2 ? <Pagination.Item onClick={() => {
+                        changePage(page - 1)
+                    }}>{page - 1}</Pagination.Item> : null}
 
+
+                    {page > 1 && page < lastPage ? <Pagination.Item active onClick={() => {
+                        changePage(page)
+                    }}>{page}</Pagination.Item> : null}
+
+                    {page < lastPage - 1 ? <Pagination.Item onClick={() => {
+                        changePage(page + 1)
+                    }}>{page + 1}</Pagination.Item> : null}
+                    {page < lastPage - 2 ? <Pagination.Ellipsis /> : null}
+                    <Pagination.Item active={page == lastPage} onClick={() => {
+                        changePage(lastPage)
+                    }}>{lastPage}</Pagination.Item>
+                    <Pagination.Next onClick={() => {
+                        changePage(page + 1)
+                    }} />
+                </Pagination>
                 <Table hover>
                     <thead>
                         <tr>
                             <th onClick={handleSort}>Name</th>
-                            <th>Age</th>
+                            <th onClick={() => { changePage(page + 1) }}>Age</th>
                             <th>Birth Date</th>
                             <th>Death Date</th>
                             <th>Nationality</th>
@@ -157,8 +198,7 @@ export default function Directors() {
                         ) : null}
                     </tbody>
                 </Table>
-            </Container>
-
+            </Container >
         </>
     );
 }
