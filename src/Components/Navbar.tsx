@@ -9,12 +9,14 @@ export default function CustomNavbar() {
 
             <Navbar expand="lg">
                 <Container>
-                    <Navbar.Brand href="#home">Movie Director API</Navbar.Brand>
+                    <Navbar.Brand href="#">Movie API</Navbar.Brand>
                     <Navbar.Toggle aria-controls="basic-navbar-nav" />
                     <Navbar.Collapse id="basic-navbar-nav">
                         <Nav className="me-auto">
-                            <Nav.Link href="/">Home</Nav.Link>
-                            <Nav.Link href="/#/filter">Filter</Nav.Link>
+                            <Nav.Link href="/#/directors">Directors</Nav.Link>
+                            <Nav.Link href="/#/actors">Actors</Nav.Link>
+                            <Nav.Link href="/#/movies">Movies</Nav.Link>
+                            <Nav.Link href="/#/roles">Roles</Nav.Link>
                         </Nav>
                     </Navbar.Collapse>
                 </Container>

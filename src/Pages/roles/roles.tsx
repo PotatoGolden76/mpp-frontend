@@ -2,23 +2,18 @@ import React, { useEffect, useRef, useState } from 'react';
 import CustomNavbar from "../../Components/Navbar";
 import Container from 'react-bootstrap/Container';
 import { Alert, Button, Col, Form, Pagination, Row, Stack, Table } from 'react-bootstrap';
-import TableItem from './directorItem';
+import TableItem from './roleItem';
 
-export interface Director {
-    id: string,
-    name: string,
-    age: string,
-    birthDate: string,
-    deathDate: string,
-    nationality: string
+export interface Role {
+    id: string, character_name: string, pay: string, movie: string, actor: string
 }
 
-export default function Directors() {
+export default function Roles() {
     const [data, setData] = useState([])
-    const [selection, setSelection] = useState<Director | undefined>({} as Director)
+    const [selection, setSelection] = useState<Role | undefined>({} as Role)
     const form = useRef(null)
 
-    const endpoint = "/directors/"
+    const endpoint = "/roles/"
 
     // fetch directors please >.<
     const fetchData = (page: number) => {
@@ -27,7 +22,7 @@ export default function Directors() {
         })
             .then(response => response.json())
             .then(json => {
-                setData(json.directors)
+                setData(json.roles)
                 setLast(json["last_page"])
             })
     }
@@ -39,12 +34,12 @@ export default function Directors() {
         console.log(selection)
     }, [selection])
 
-    const selectDirector = (dir_sel: any) => {
+    const selectRole = (dir_sel: any) => {
         console.log(dir_sel)
         setSelection(dir_sel)
     }
 
-    const updateDirector = (e: any) => {
+    const updateRole = (e: any) => {
         e.preventDefault()
         if (selection == undefined)
             return
@@ -55,17 +50,17 @@ export default function Directors() {
                 "Content-Type": "application/json",
             },
             body: JSON.stringify(selection),
-        }).then(response => {showAlert("[" + response.status + "] " + response.statusText, (400 <= response.status && response.status < 600) ? false : true)})
+        }).then(response => { showAlert("[" + response.status + "] " + response.statusText, (400 <= response.status && response.status < 600) ? false : true) })
             .then(() => { fetchData(page) })
     }
 
-    const deleteDirector = (id: any) => {
+    const deleteRole = (id: any) => {
         if (id) {
             fetch(process.env.REACT_APP_API_URL + endpoint + id, {
                 method: "DELETE"
             }).then(response => console.log(response))
-                .then(() => { 
-                    fetchData(page) 
+                .then(() => {
+                    fetchData(page)
                     showAlert("Delete successful", true)
                 })
         }
@@ -80,14 +75,14 @@ export default function Directors() {
         let temp = [...data]
 
         console.log(temp)
-        temp.sort((a: Director, b: Director) => { return a.name.localeCompare(b.name) })
+        temp.sort((a: Role, b: Role) => { return a.pay.localeCompare(b.pay) })
         setData(direction ? temp : temp.reverse())
         setDir(!direction)
     }
 
 
     const [page, setPage] = useState(1)
-    const [lastPage, setLast] = useState(1)
+    const [lastPage, setLast] = useState(10)
 
     const changePage = (nr: number) => {
         nr = Math.min(Math.max(nr, 1), lastPage);
@@ -122,40 +117,28 @@ export default function Directors() {
                             </Col>
                             <Col md={12} lg={6}>
                                 <Form.Group className="mb-1" controlId="formName">
-                                    <Form.Label>Name:</Form.Label>
-                                    <Form.Control value={selection ? selection!.name : ""} onChange={e => setSelection({ ...selection!, name: e.target.value })} type="text" placeholder="" />
+                                    <Form.Label>Character Name:</Form.Label>
+                                    <Form.Control value={selection ? selection!.character_name : ""} onChange={e => setSelection({ ...selection!, character_name: e.target.value })} type="text" placeholder="" />
                                 </Form.Group>
                             </Col>
                             <Col md={12} lg={6}>
                                 <Form.Group className="mb-1" controlId="formName">
-                                    <Form.Label>Age:</Form.Label>
-                                    <Form.Control value={selection ? selection!.age : ""} onChange={e => setSelection({ ...selection!, age: e.target.value })} type="text" placeholder="" />
+                                    <Form.Label>Pay:</Form.Label>
+                                    <Form.Control value={selection ? selection!.pay : ""} onChange={e => setSelection({ ...selection!, pay: e.target.value })} type="text" placeholder="" />
                                 </Form.Group>
                             </Col>
                             <Col md={12} lg={6}>
-                                <Form.Group className="mb-1" controlId="formRating">
-                                    <Form.Label>Nationality:</Form.Label>
-                                    <Form.Control value={selection ? selection!.nationality : ""} onChange={e => setSelection({ ...selection!, nationality: e.target.value })} type="text" placeholder="" />
+                                <Form.Group className="mb-1" controlId="formName">
+                                    <Form.Label>Movie:</Form.Label>
+                                    <Form.Control value={selection ? selection!.movie : ""} onChange={e => setSelection({ ...selection!, movie: e.target.value })} type="text" placeholder="" />
                                 </Form.Group>
                             </Col>
-                        </Row>
-
-                        <Row>
                             <Col md={12} lg={6}>
-                                <Form.Group className="mb-1" controlId="formReleaseYear">
-                                    <Form.Label>Birth Date:</Form.Label>
-                                    <Form.Control required value={(selection != undefined && selection != null && selection.birthDate) ? (new Date(selection!.birthDate).toISOString().split('T')[0]) : ""} onChange={e => setSelection({ ...selection!, birthDate: new Date(e.target.value).toISOString() })} type="date" placeholder="" />
+                                <Form.Group className="mb-1" controlId="formName">
+                                    <Form.Label>Actor:</Form.Label>
+                                    <Form.Control value={selection ? selection!.actor : ""} onChange={e => setSelection({ ...selection!, actor: e.target.value })} type="text" placeholder="" />
                                 </Form.Group>
                             </Col>
-
-                            <Col md={12} lg={6}>
-                                <Form.Group className="mb-1" controlId="formCompany">
-                                    <Form.Label>Death Date:</Form.Label>
-                                    <Form.Control value={(selection != undefined && selection != null && selection.deathDate) ? (new Date(selection!.deathDate).toISOString().split('T')[0]) : ""} onChange={e => setSelection({ ...selection!, deathDate: new Date(e.target.value).toISOString() })} type="date" placeholder="" />
-                                </Form.Group>
-                            </Col>
-
-
                         </Row>
 
                         <Row className='my-3'>
@@ -166,7 +149,7 @@ export default function Directors() {
 
                         <Row>
                             <Col md={12} lg={6}>
-                                <Button type="submit" className="p-2 my-2 w-100" onClick={updateDirector}>Modify</Button>
+                                <Button type="submit" className="p-2 my-2 w-100" onClick={updateRole}>Modify</Button>
                             </Col>
 
                             <Col md={12} lg={6}>
@@ -209,17 +192,16 @@ export default function Directors() {
                 <Table responsive hover>
                     <thead>
                         <tr>
-                            <th onClick={handleSort}>Name</th>
-                            <th onClick={() => { changePage(page + 1) }}>Age</th>
-                            <th>Birth Date</th>
-                            <th>Death Date</th>
-                            <th>Nationality</th>
+                            <th>Character Name</th>
+                            <th>Pay</th>
+                            <th>Movie</th>
+                            <th>Actor</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         {data ? data.map((e: any) =>
-                            <TableItem key={e.id} object={e} onClick={selectDirector} deleteGame={deleteDirector} />
+                            <TableItem key={e.id} object={e} onClick={selectRole} deleteGame={deleteRole} />
                         ) : null}
                     </tbody>
                 </Table>

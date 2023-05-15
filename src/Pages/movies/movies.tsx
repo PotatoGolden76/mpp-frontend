@@ -2,23 +2,25 @@ import React, { useEffect, useRef, useState } from 'react';
 import CustomNavbar from "../../Components/Navbar";
 import Container from 'react-bootstrap/Container';
 import { Alert, Button, Col, Form, Pagination, Row, Stack, Table } from 'react-bootstrap';
-import TableItem from './directorItem';
+import TableItem from './movieItem';
 
-export interface Director {
+export interface Movie {
     id: string,
-    name: string,
-    age: string,
-    birthDate: string,
-    deathDate: string,
-    nationality: string
+    title: string,
+    genre: string,
+    releaseDate: string,
+    language: string,
+    rating: string,
+    director: string,
+    synopsis: string,
 }
 
-export default function Directors() {
+export default function Movies() {
     const [data, setData] = useState([])
-    const [selection, setSelection] = useState<Director | undefined>({} as Director)
+    const [selection, setSelection] = useState<Movie | undefined>({} as Movie)
     const form = useRef(null)
 
-    const endpoint = "/directors/"
+    const endpoint = "/movies/"
 
     // fetch directors please >.<
     const fetchData = (page: number) => {
@@ -27,7 +29,7 @@ export default function Directors() {
         })
             .then(response => response.json())
             .then(json => {
-                setData(json.directors)
+                setData(json.movies)
                 setLast(json["last_page"])
             })
     }
@@ -39,12 +41,12 @@ export default function Directors() {
         console.log(selection)
     }, [selection])
 
-    const selectDirector = (dir_sel: any) => {
+    const selectMovie = (dir_sel: any) => {
         console.log(dir_sel)
         setSelection(dir_sel)
     }
 
-    const updateDirector = (e: any) => {
+    const updateMovie = (e: any) => {
         e.preventDefault()
         if (selection == undefined)
             return
@@ -59,7 +61,7 @@ export default function Directors() {
             .then(() => { fetchData(page) })
     }
 
-    const deleteDirector = (id: any) => {
+    const deleteMovie = (id: any) => {
         if (id) {
             fetch(process.env.REACT_APP_API_URL + endpoint + id, {
                 method: "DELETE"
@@ -80,14 +82,14 @@ export default function Directors() {
         let temp = [...data]
 
         console.log(temp)
-        temp.sort((a: Director, b: Director) => { return a.name.localeCompare(b.name) })
+        temp.sort((a: Movie, b: Movie) => { return a.title.localeCompare(b.title) })
         setData(direction ? temp : temp.reverse())
         setDir(!direction)
     }
 
 
     const [page, setPage] = useState(1)
-    const [lastPage, setLast] = useState(1)
+    const [lastPage, setLast] = useState(10)
 
     const changePage = (nr: number) => {
         nr = Math.min(Math.max(nr, 1), lastPage);
@@ -122,40 +124,47 @@ export default function Directors() {
                             </Col>
                             <Col md={12} lg={6}>
                                 <Form.Group className="mb-1" controlId="formName">
-                                    <Form.Label>Name:</Form.Label>
-                                    <Form.Control value={selection ? selection!.name : ""} onChange={e => setSelection({ ...selection!, name: e.target.value })} type="text" placeholder="" />
+                                    <Form.Label>Title:</Form.Label>
+                                    <Form.Control value={selection ? selection!.title : ""} onChange={e => setSelection({ ...selection!, title: e.target.value })} type="text" placeholder="" />
                                 </Form.Group>
                             </Col>
                             <Col md={12} lg={6}>
                                 <Form.Group className="mb-1" controlId="formName">
-                                    <Form.Label>Age:</Form.Label>
-                                    <Form.Control value={selection ? selection!.age : ""} onChange={e => setSelection({ ...selection!, age: e.target.value })} type="text" placeholder="" />
+                                    <Form.Label>Genre:</Form.Label>
+                                    <Form.Control value={selection ? selection!.genre : ""} onChange={e => setSelection({ ...selection!, genre: e.target.value })} type="text" placeholder="" />
                                 </Form.Group>
                             </Col>
                             <Col md={12} lg={6}>
-                                <Form.Group className="mb-1" controlId="formRating">
-                                    <Form.Label>Nationality:</Form.Label>
-                                    <Form.Control value={selection ? selection!.nationality : ""} onChange={e => setSelection({ ...selection!, nationality: e.target.value })} type="text" placeholder="" />
+                                <Form.Group className="mb-1" controlId="formName">
+                                    <Form.Label>Language:</Form.Label>
+                                    <Form.Control value={selection ? selection!.language : ""} onChange={e => setSelection({ ...selection!, language: e.target.value })} type="text" placeholder="" />
                                 </Form.Group>
                             </Col>
-                        </Row>
-
-                        <Row>
                             <Col md={12} lg={6}>
-                                <Form.Group className="mb-1" controlId="formReleaseYear">
-                                    <Form.Label>Birth Date:</Form.Label>
-                                    <Form.Control required value={(selection != undefined && selection != null && selection.birthDate) ? (new Date(selection!.birthDate).toISOString().split('T')[0]) : ""} onChange={e => setSelection({ ...selection!, birthDate: new Date(e.target.value).toISOString() })} type="date" placeholder="" />
+                                <Form.Group className="mb-1" controlId="formName">
+                                    <Form.Label>Rating:</Form.Label>
+                                    <Form.Control value={selection ? selection!.rating : ""} onChange={e => setSelection({ ...selection!, rating: e.target.value })} type="text" placeholder="" />
                                 </Form.Group>
                             </Col>
-
+                            <Col md={12} lg={6}>
+                                <Form.Group className="mb-1" controlId="formName">
+                                    <Form.Label>Director:</Form.Label>
+                                    <Form.Control value={selection ? selection!.director : ""} onChange={e => setSelection({ ...selection!, director: e.target.value })} type="text" placeholder="" />
+                                </Form.Group>
+                            </Col>
+                            <Col md={12} lg={6}>
+                                <Form.Group className="mb-1" controlId="formName">
+                                    <Form.Label>Synopsis:</Form.Label>
+                                    <Form.Control value={selection ? selection!.synopsis : ""} onChange={e => setSelection({ ...selection!, synopsis: e.target.value })} type="text" placeholder="" />
+                                </Form.Group>
+                            </Col>
+                            
                             <Col md={12} lg={6}>
                                 <Form.Group className="mb-1" controlId="formCompany">
-                                    <Form.Label>Death Date:</Form.Label>
-                                    <Form.Control value={(selection != undefined && selection != null && selection.deathDate) ? (new Date(selection!.deathDate).toISOString().split('T')[0]) : ""} onChange={e => setSelection({ ...selection!, deathDate: new Date(e.target.value).toISOString() })} type="date" placeholder="" />
+                                    <Form.Label>Release Date:</Form.Label>
+                                    <Form.Control value={(selection != undefined && selection != null && selection.releaseDate) ? (new Date(selection!.releaseDate).toISOString().split('T')[0]) : ""} onChange={e => setSelection({ ...selection!, releaseDate: new Date(e.target.value).toISOString() })} type="date" placeholder="" />
                                 </Form.Group>
                             </Col>
-
-
                         </Row>
 
                         <Row className='my-3'>
@@ -166,7 +175,7 @@ export default function Directors() {
 
                         <Row>
                             <Col md={12} lg={6}>
-                                <Button type="submit" className="p-2 my-2 w-100" onClick={updateDirector}>Modify</Button>
+                                <Button type="submit" className="p-2 my-2 w-100" onClick={updateMovie}>Modify</Button>
                             </Col>
 
                             <Col md={12} lg={6}>
@@ -209,17 +218,19 @@ export default function Directors() {
                 <Table responsive hover>
                     <thead>
                         <tr>
-                            <th onClick={handleSort}>Name</th>
-                            <th onClick={() => { changePage(page + 1) }}>Age</th>
-                            <th>Birth Date</th>
-                            <th>Death Date</th>
-                            <th>Nationality</th>
+                            <th onClick={handleSort}>Title</th>
+                            <th onClick={() => { changePage(page + 1) }}>Rating</th>
+                            <th>Genre</th>
+                            <th>Release Date</th>
+                            <th>Language</th>
+                            <th>Director</th>
+                            <th>Synopsis</th>
                             <th></th>
                         </tr>
                     </thead>
                     <tbody>
                         {data ? data.map((e: any) =>
-                            <TableItem key={e.id} object={e} onClick={selectDirector} deleteGame={deleteDirector} />
+                            <TableItem key={e.id} object={e} onClick={selectMovie} deleteGame={deleteMovie} />
                         ) : null}
                     </tbody>
                 </Table>

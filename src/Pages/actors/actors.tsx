@@ -2,9 +2,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import CustomNavbar from "../../Components/Navbar";
 import Container from 'react-bootstrap/Container';
 import { Alert, Button, Col, Form, Pagination, Row, Stack, Table } from 'react-bootstrap';
-import TableItem from './directorItem';
+import TableItem from './actorItem';
 
-export interface Director {
+export interface Actor {
     id: string,
     name: string,
     age: string,
@@ -13,12 +13,12 @@ export interface Director {
     nationality: string
 }
 
-export default function Directors() {
+export default function Actors() {
     const [data, setData] = useState([])
-    const [selection, setSelection] = useState<Director | undefined>({} as Director)
+    const [selection, setSelection] = useState<Actor | undefined>({} as Actor)
     const form = useRef(null)
 
-    const endpoint = "/directors/"
+    const endpoint = "/actors/"
 
     // fetch directors please >.<
     const fetchData = (page: number) => {
@@ -27,7 +27,7 @@ export default function Directors() {
         })
             .then(response => response.json())
             .then(json => {
-                setData(json.directors)
+                setData(json.actors)
                 setLast(json["last_page"])
             })
     }
@@ -39,7 +39,7 @@ export default function Directors() {
         console.log(selection)
     }, [selection])
 
-    const selectDirector = (dir_sel: any) => {
+    const selectActor = (dir_sel: any) => {
         console.log(dir_sel)
         setSelection(dir_sel)
     }
@@ -59,7 +59,7 @@ export default function Directors() {
             .then(() => { fetchData(page) })
     }
 
-    const deleteDirector = (id: any) => {
+    const deleteActor = (id: any) => {
         if (id) {
             fetch(process.env.REACT_APP_API_URL + endpoint + id, {
                 method: "DELETE"
@@ -80,14 +80,14 @@ export default function Directors() {
         let temp = [...data]
 
         console.log(temp)
-        temp.sort((a: Director, b: Director) => { return a.name.localeCompare(b.name) })
+        temp.sort((a: Actor, b: Actor) => { return a.name.localeCompare(b.name) })
         setData(direction ? temp : temp.reverse())
         setDir(!direction)
     }
 
 
     const [page, setPage] = useState(1)
-    const [lastPage, setLast] = useState(1)
+    const [lastPage, setLast] = useState(10)
 
     const changePage = (nr: number) => {
         nr = Math.min(Math.max(nr, 1), lastPage);
@@ -219,7 +219,7 @@ export default function Directors() {
                     </thead>
                     <tbody>
                         {data ? data.map((e: any) =>
-                            <TableItem key={e.id} object={e} onClick={selectDirector} deleteGame={deleteDirector} />
+                            <TableItem key={e.id} object={e} onClick={selectActor} deleteGame={deleteActor} />
                         ) : null}
                     </tbody>
                 </Table>
